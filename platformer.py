@@ -3,13 +3,13 @@ from gymnasium import spaces
 import numpy as np
 from gymnasium.envs.registration import register
 
-class AdvancedCorridorEnv(gym.Env):
+class PlatformerEnv(gym.Env):
     """
     Custom 1D Platformer environment.
     The agents goal is to walk right while avoiding pits, and reach the goal at the right most position.
     """
     def __init__(self, length=15):
-        super(AdvancedCorridorEnv, self).__init__()
+        super(PlatformerEnv, self).__init__()
         
         self.length = length
         
