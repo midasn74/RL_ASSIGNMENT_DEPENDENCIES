@@ -71,6 +71,6 @@ class AdvancedCorridorEnv(gym.Env):
         print("\n" + " ".join(corridor))
 
 register(
-    id='AdvancedCorridor-v0',
-    entry_point='corridor:AdvancedCorridorEnv', 
+    id='Platformer-v0',
+    entry_point='platformer:PlatformerEnv', 
 )
