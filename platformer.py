@@ -47,9 +47,9 @@ class PlatformerEnv(gym.Env):
     @property
     def P(self):
         P = {}
-        for s in range(self.nS()):
+        for s in range(self.nS):
             P[s] = {}
-            for a in range(self.nA()):
+            for a in range(self.nA):
                 if a == 0:
                     next_state = max(0, s - 1)
                     reward = -1
