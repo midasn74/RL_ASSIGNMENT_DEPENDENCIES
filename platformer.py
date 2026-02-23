@@ -33,8 +33,32 @@ class PlatformerEnv(gym.Env):
         self.reset()
 
     def get_empty_policy(self):
-        # Returns a starting/sample policy (all zeros)
+        # Returns a starting/sample probabalistic policy (all zeros)
         return np.zeros((self.observation_space.n, self.action_space.n))
+    
+    def nS(self):
+        return self.observation_space.n
+    
+    def nA(self):
+        return self.action_space.n
+
+    def P(self):
+        P = {}
+        for s in range(self.nS()):
+            P[s] = {}
+            for a in range(self.nA()):
+                if a == 0:
+                    next_state = max(0, s - 1)
+                    reward = -1
+                elif a == 1:
+                    next_state = min(self.length - 1, s + 1)
+                    reward = -1
+                elif a == 2:
+                    next_state = min(self.length - 1, s + 2)
+                    reward = -2.5
+                terminated = next_state in self.pits or next_state == self.goal_pos
+                P[s][a] = [(1.0, next_state, reward, terminated, {})]
+            return P
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
