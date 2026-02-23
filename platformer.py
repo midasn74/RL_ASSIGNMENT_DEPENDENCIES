@@ -32,6 +32,10 @@ class PlatformerEnv(gym.Env):
         
         self.reset()
 
+    def get_empty_policy(self):
+        # Returns a starting/sample policy (all zeros)
+        return np.zeros((self.observation_space.n, self.action_space.n))
+
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.agent_pos = 0
