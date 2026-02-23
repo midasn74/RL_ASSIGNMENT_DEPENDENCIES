@@ -8,6 +8,14 @@ class PlatformerEnv(gym.Env):
     Custom 1D Platformer environment.
     The agents goal is to walk right while avoiding pits, and reach the goal at the right most position.
     """
+    @staticmethod
+    def get_actions():
+        return {
+            0: "Left",
+            1: "Right",
+            2: "Jump Right"
+        }
+
     def __init__(self, length=15):
         super(PlatformerEnv, self).__init__()
         
@@ -69,6 +77,7 @@ class PlatformerEnv(gym.Env):
         corridor[self.agent_pos] = "A" 
         
         print("\n" + " ".join(corridor))
+
 
 register(
     id='Platformer-v0',
