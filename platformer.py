@@ -31,17 +31,20 @@ class PlatformerEnv(gym.Env):
         self.pits = [4, 8, 12]
         
         self.reset()
-
+    
     def get_empty_policy(self):
         # Returns a starting/sample probabalistic policy (all zeros)
         return np.zeros((self.observation_space.n, self.action_space.n))
     
+    @property
     def nS(self):
         return self.observation_space.n
     
+    @property
     def nA(self):
         return self.action_space.n
 
+    @property
     def P(self):
         P = {}
         for s in range(self.nS()):
