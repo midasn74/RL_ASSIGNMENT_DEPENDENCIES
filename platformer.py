@@ -22,7 +22,7 @@ class PlatformerEnv(gym.Env):
                  walk_cost=-1.0,
                  jump_cost=-2.5,
                  pit_penalty=-20.0,
-                 goal_reward=20.0
+                 goal_reward=25.0
     ):
         super(PlatformerEnv, self).__init__()
 
