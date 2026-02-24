@@ -15,6 +15,10 @@ def policy_evaluation(env, policy, gamma=0.99, theta=1e-8):
     while True:
         delta = 0
         for s in range(nS):
+            if s in env.pits or s == env.goal_pos:
+                V[s] = 0
+                continue
+                
             v = 0
             for a in range(nA):
                 action_prob = policy[s][a]
