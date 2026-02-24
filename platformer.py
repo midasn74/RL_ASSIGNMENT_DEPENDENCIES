@@ -20,7 +20,7 @@ class PlatformerEnv(gym.Env):
     def __init__(self, 
                  length=15,
                  walk_cost=-1.0,
-                 jump_cost=-2.5,
+                 jump_cost=-3,
                  pit_penalty=-100.0,
                  goal_reward=50.0
     ):
