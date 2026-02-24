@@ -61,7 +61,7 @@ class PlatformerEnv(gym.Env):
                     reward = -2.5
                 terminated = next_state in self.pits or next_state == self.goal_pos
                 P[s][a] = [(1.0, next_state, reward, terminated, {})]
-            return P
+        return P
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
