@@ -59,14 +59,15 @@ class PlatformerEnv(gym.Env):
     @property
     def P(self):
         P = {}
-
         for s in range(self.nS):
             P[s] = {}
-
             for a in range(self.nA):
 
-                if s in self.pits or s == self.goal_pos:
-                    P[s][a] = [(1.0, s, 0.0, True, {})]
+                if s in self.pits:
+                    P[s][a] = [(1.0, s, self.pit_penalty, True, {})]
+                    continue
+                elif s == self.goal_pos:
+                    P[s][a] = [(1.0, s, self.goal_reward, True, {})]
                     continue
 
                 if a == 0:  # Left
@@ -80,7 +81,6 @@ class PlatformerEnv(gym.Env):
                     reward = self.jump_cost
 
                 terminated = False
-
                 if next_state in self.pits:
                     reward = self.pit_penalty
                     terminated = True
@@ -91,7 +91,7 @@ class PlatformerEnv(gym.Env):
                 P[s][a] = [(1.0, next_state, reward, terminated, {})]
 
         return P
-
+    
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.agent_pos = 0
