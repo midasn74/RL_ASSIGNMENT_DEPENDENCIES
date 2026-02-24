@@ -62,15 +62,11 @@ class PlatformerEnv(gym.Env):
         for s in range(self.nS):
             P[s] = {}
             for a in range(self.nA):
-
-                if s in self.pits:
-                    P[s][a] = [(1.0, s, self.pit_penalty, True, {})]
-                    continue
-                elif s == self.goal_pos:
-                    P[s][a] = [(1.0, s, self.goal_reward, True, {})]
+                if s in self.pits or s == self.goal_pos:
+                    P[s][a] = [(1.0, s, 0.0, True, {})]
                     continue
 
-                if a == 0:  # Left
+                if a == 0:    # Left
                     next_state = max(0, s - 1)
                     reward = self.walk_cost
                 elif a == 1:  # Right
@@ -89,7 +85,6 @@ class PlatformerEnv(gym.Env):
                     terminated = True
 
                 P[s][a] = [(1.0, next_state, reward, terminated, {})]
-
         return P
     
     def reset(self, seed=None, options=None):
@@ -103,29 +98,22 @@ class PlatformerEnv(gym.Env):
         if action == 0: # Left
             self.agent_pos = max(0, self.agent_pos - 1)
             reward = self.walk_cost
-
         elif action == 1: # Right
             self.agent_pos = min(self.length - 1, self.agent_pos + 1)
             reward = self.walk_cost
-
         elif action == 2: # Jump Right
             self.agent_pos = min(self.length - 1, self.agent_pos + 2)
             reward = self.jump_cost
 
-        self.steps += 1
         terminated = False
         truncated = False
 
         if self.agent_pos in self.pits:
             reward = self.pit_penalty
             terminated = True
-
         elif self.agent_pos == self.goal_pos:
             reward = self.goal_reward
             terminated = True
-
-        # if self.steps >= 5 * self.length:
-        #     truncated = True
 
         return self.agent_pos, reward, terminated, truncated, {}
 
