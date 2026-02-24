@@ -124,8 +124,8 @@ class PlatformerEnv(gym.Env):
             reward = self.goal_reward
             terminated = True
 
-        if self.steps >= 5 * self.length:
-            truncated = True
+        # if self.steps >= 5 * self.length:
+        #     truncated = True
 
         return self.agent_pos, reward, terminated, truncated, {}
 
@@ -133,16 +133,16 @@ class PlatformerEnv(gym.Env):
         """
         Args:
             V: State-value function [nS]
-            policy: Policy [nS, nA], use deterministic policy (argmax) for display
+            policy: Policy [nS, nA], deterministic or not
         """
         nS = self.length
-        corridor = np.array(["_"]*nS, dtype=object)
+        corridor = np.array(["_"] * nS, dtype=object)
 
         corridor[self.pits] = "U"
         corridor[self.goal_pos] = "G"
         corridor[self.agent_pos] = "A"
 
-        fig, ax = plt.subplots(figsize=(nS*0.6, 3))
+        fig, ax = plt.subplots(figsize=(nS * 0.7, 4))
 
         x = np.arange(nS)
 
@@ -151,7 +151,14 @@ class PlatformerEnv(gym.Env):
         else:
             values = np.zeros(nS)
 
-        bars = ax.bar(x, values, color="skyblue", edgecolor="black", width=0.8, linewidth=1.5)
+        bars = ax.bar(
+            x,
+            values,
+            color="lightgray",
+            edgecolor="black",
+            width=0.8,
+            linewidth=2
+        )
 
         for i in range(nS):
             if i in self.pits:
@@ -162,25 +169,55 @@ class PlatformerEnv(gym.Env):
                 bars[i].set_color("orange")
 
         if policy is not None:
+
+            action_colors = ["blue", "purple", "gold"]
+            action_labels = ["← Left", "→ Right", "⇑ Jump"]
+
             for i in range(nS):
                 if i in self.pits or i == self.goal_pos:
                     continue
-                a = np.argmax(policy[i])
-                if a == 0:
-                    arrow = "←"
-                elif a == 1:
-                    arrow = "→"
-                elif a == 2:
-                    arrow = "⇑"
-                else:
-                    arrow = "?"
-                ax.text(i, values[i]+0.5, arrow, ha="center", va="bottom", fontsize=14, color="black")
+
+                probs = policy[i]
+
+                probs = probs / np.sum(probs)
+
+                base_height = values[i]
+
+                bottom = base_height
+
+                for a in range(self.nA):
+                    height = probs[a] * 2.0
+
+                    ax.bar(
+                        i,
+                        height,
+                        bottom=bottom,
+                        width=0.5,
+                        color=action_colors[a],
+                        alpha=0.8
+                    )
+
+                    bottom += height
 
         ax.set_xticks(x)
-        ax.set_xticklabels(corridor)
+        ax.set_xticklabels(corridor, fontsize=12)
         ax.set_ylabel("State Value")
-        ax.set_title("Platformer: State Values and Policy")
-        ax.set_ylim(min(values)-2, max(values)+3)
+        ax.set_title("Platformer: Value Function + Action Probabilities")
+
+        ax.axhline(0, linewidth=2)
+
+        ax.set_ylim(min(values) - 5, max(values) + 6)
+
+        if policy is not None:
+            from matplotlib.patches import Patch
+            legend_elements = [
+                Patch(facecolor="blue", label="← Left"),
+                Patch(facecolor="purple", label="→ Right"),
+                Patch(facecolor="gold", label="⇑ Jump"),
+            ]
+            ax.legend(handles=legend_elements, loc="upper left")
+
+        plt.tight_layout()
         plt.show()
 
 
