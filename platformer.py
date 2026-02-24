@@ -128,16 +128,46 @@ class PlatformerEnv(gym.Env):
 
         return self.agent_pos, reward, terminated, truncated, {}
 
-    def render(self):
+    def render(self, V=None, policy=None):
+        """
+        Args:
+            V: State-value function [nS]
+            policy: Policy [nS, nA], use deterministic policy (argmax) for display
+        """
         corridor = ["_"] * self.length
-        
+
         for p in self.pits:
-            corridor[p] = "U" 
-            
-        corridor[self.goal_pos] = "G"
-        corridor[self.agent_pos] = "A" 
-        
+            corridor[p] = "U"  # Pit
+        corridor[self.goal_pos] = "G"  # Goal
+        corridor[self.agent_pos] = "A"  # Agent
+
         print("\n" + " ".join(corridor))
+
+        if policy is not None:
+            arrows = []
+            for s in range(self.length):
+                if s in self.pits:
+                    arrows.append(" ")
+                    continue
+                if s == self.goal_pos:
+                    arrows.append(" ")
+                    continue
+
+                # Display action with highest probability
+                a = np.argmax(policy[s])
+                if a == 0:
+                    arrows.append("←")
+                elif a == 1:
+                    arrows.append("→")
+                elif a == 2:
+                    arrows.append("⇑")
+                else:
+                    arrows.append("?")
+            print(" ".join(arrows))
+
+        if V is not None:
+            val_strs = [f"{v:5.1f}" for v in V]
+            print(" ".join(val_strs))
 
 
 register(
