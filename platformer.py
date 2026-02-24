@@ -151,7 +151,7 @@ class PlatformerEnv(gym.Env):
         else:
             values = np.zeros(nS)
 
-        bars = ax.bar(x, values, color="skyblue", edgecolor="black", width=0.6)
+        bars = ax.bar(x, values, color="skyblue", edgecolor="black", width=0.8, linewidth=1.5)
 
         for i in range(nS):
             if i in self.pits:
