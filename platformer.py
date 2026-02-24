@@ -1,7 +1,8 @@
 import gymnasium as gym
 from gymnasium import spaces
-import numpy as np
 from gymnasium.envs.registration import register
+import numpy as np
+import matplotlib.pyplot as plt
 
 class PlatformerEnv(gym.Env):
     """
@@ -134,40 +135,53 @@ class PlatformerEnv(gym.Env):
             V: State-value function [nS]
             policy: Policy [nS, nA], use deterministic policy (argmax) for display
         """
-        corridor = ["_"] * self.length
+        nS = self.length
+        corridor = np.array(["_"]*nS, dtype=object)
 
-        for p in self.pits:
-            corridor[p] = "U"  # Pit
-        corridor[self.goal_pos] = "G"  # Goal
-        corridor[self.agent_pos] = "A"  # Agent
+        corridor[self.pits] = "U"
+        corridor[self.goal_pos] = "G"
+        corridor[self.agent_pos] = "A"
 
-        print("\n" + " ".join(corridor))
+        fig, ax = plt.subplots(figsize=(nS*0.6, 3))
 
-        if policy is not None:
-            arrows = []
-            for s in range(self.length):
-                if s in self.pits:
-                    arrows.append(" ")
-                    continue
-                if s == self.goal_pos:
-                    arrows.append(" ")
-                    continue
-
-                # Display action with highest probability
-                a = np.argmax(policy[s])
-                if a == 0:
-                    arrows.append("←")
-                elif a == 1:
-                    arrows.append("→")
-                elif a == 2:
-                    arrows.append("⇑")
-                else:
-                    arrows.append("?")
-            print(" ".join(arrows))
+        x = np.arange(nS)
 
         if V is not None:
-            val_strs = [f"{v:5.1f}" for v in V]
-            print(" ".join(val_strs))
+            values = np.array(V)
+        else:
+            values = np.zeros(nS)
+
+        bars = ax.bar(x, values, color="skyblue", edgecolor="black", width=0.6)
+
+        for i in range(nS):
+            if i in self.pits:
+                bars[i].set_color("red")
+            elif i == self.goal_pos:
+                bars[i].set_color("green")
+            elif i == self.agent_pos:
+                bars[i].set_color("orange")
+
+        if policy is not None:
+            for i in range(nS):
+                if i in self.pits or i == self.goal_pos:
+                    continue
+                a = np.argmax(policy[i])
+                if a == 0:
+                    arrow = "←"
+                elif a == 1:
+                    arrow = "→"
+                elif a == 2:
+                    arrow = "⇑"
+                else:
+                    arrow = "?"
+                ax.text(i, values[i]+0.5, arrow, ha="center", va="bottom", fontsize=14, color="black")
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(corridor)
+        ax.set_ylabel("State Value")
+        ax.set_title("Platformer: State Values and Policy")
+        ax.set_ylim(min(values)-2, max(values)+3)
+        plt.show()
 
 
 register(
