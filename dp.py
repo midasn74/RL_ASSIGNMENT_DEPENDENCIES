@@ -104,7 +104,6 @@ def value_iteration(env, gamma=0.99, theta=1e-8):
 
     nA = env.nA
     nS = env.nS
-    p = env.P()
 
     value_funcion = [0] * nS
     policy = env.get_empty_policy()
@@ -119,7 +118,7 @@ def value_iteration(env, gamma=0.99, theta=1e-8):
             action_values = []
             for action in range(nA): # Loop over all possible actions from state
                 action_reward = 0
-                for prob, next_state, reward, _, _ in p[state][action]: # Loop over all possible future nodes, given current action
+                for prob, next_state, reward, _, _ in env.P()[state][action]: # Loop over all possible future nodes, given current action
                     action_reward += prob * (reward + gamma * value_funcion[next_state]) # Inner part Bellman Equation
                 action_values.append(action_reward)
             
@@ -133,7 +132,7 @@ def value_iteration(env, gamma=0.99, theta=1e-8):
         action_values = []
         for action in range(nA): # Loop over all possible actions from state
             action_reward = 0
-            for prob, next_state, reward, _, _ in p[state][action]: # Loop over all possible future nodes, given current action
+            for prob, next_state, reward, _, _ in env.P()[state][action]: # Loop over all possible future nodes, given current action
                 action_reward += prob * (reward + gamma * value_funcion[next_state]) # Inner part Bellman Equation
             action_values.append(action_reward)
         
