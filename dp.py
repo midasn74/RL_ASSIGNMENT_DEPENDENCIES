@@ -140,5 +140,5 @@ def value_iteration(env, gamma=0.99, theta=1e-8):
         optimal_action = np.argmax(action_values) # Index of the optimal action
         policy[state][optimal_action] = 1
 
-    return policy
+    return policy, value_funcion
 
