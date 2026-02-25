@@ -91,7 +91,7 @@ def policy_iteration(env, gamma=0.99, theta=1e-8, max_iterations=1000):
 
     return policy, V
 
-def value_iteration(env, gamma=0.99, theta=1e-8):
+def value_iteration(env, gamma=0.99, theta=1e-8, max_iterations=1000):
     """
     Args:
         env: Gymnasium environment
@@ -105,27 +105,31 @@ def value_iteration(env, gamma=0.99, theta=1e-8):
     nA = env.nA
     nS = env.nS
 
-    value_funcion = [0] * nS
+    value_function = [0] * nS
     policy = env.get_empty_policy()
     delta = 0
 
-    while delta < theta:
+    for i in range(max_iterations):
         delta = 0
         
         for state in range(nS):
-            state_value = value_funcion[state] # current value of the state
+            state_value = value_function[state] # current value of the state
             
             action_values = []
             for action in range(nA): # Loop over all possible actions from state
                 action_reward = 0
                 for prob, next_state, reward, _, _ in env.P[state][action]: # Loop over all possible future nodes, given current action
-                    action_reward += prob * (reward + gamma * value_funcion[next_state]) # Inner part Bellman Equation
+                    action_reward += prob * (reward + gamma * value_function[next_state]) # Inner part Bellman Equation
                 action_values.append(action_reward)
             
             new_state_value = max(action_values) # Take tha max_a of all the action values
-            value_funcion[state] = new_state_value
+            value_function[state] = new_state_value
 
-            delta = max(delta, (state_value-new_state_value))
+            delta = max(delta, abs(state_value - new_state_value))
+        
+        if delta < theta:
+            print(f"Policy converged after {i+1} iterations")
+            break
 
     # Policy extraction
     for state in range(nS):
@@ -133,11 +137,11 @@ def value_iteration(env, gamma=0.99, theta=1e-8):
         for action in range(nA): # Loop over all possible actions from state
             action_reward = 0
             for prob, next_state, reward, _, _ in env.P[state][action]: # Loop over all possible future nodes, given current action
-                action_reward += prob * (reward + gamma * value_funcion[next_state]) # Inner part Bellman Equation
+                action_reward += prob * (reward + gamma * value_function[next_state]) # Inner part Bellman Equation
             action_values.append(action_reward)
         
         optimal_action = np.argmax(action_values) # Index of the optimal action
         policy[state][optimal_action] = 1
 
-    return policy, value_funcion
+    return policy, value_function
 
