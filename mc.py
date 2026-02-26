@@ -13,7 +13,7 @@ def mc_control_epsilon_greedy(
     Monte Carlo without Exploring Starts
 
     Args:
-        env: Gymnasium environment with env.P
+        env: Gymnasium environment with env.nS and env.nA
         num_episodes: how many episodes/trials to run
         gamma: discount factor
         epsilon: exploration probability for ε-greedy
