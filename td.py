@@ -10,6 +10,22 @@ def sarsa(
     epsilon_decay=0.995,
     step_size = 0.01
 ):
+    """
+    On policy TD Control: Sarsa
+
+    Args:
+        env: Gymnasium environment with env.nS and env.nA
+        num_episodes: how many episodes/trials to run
+        gamma: discount factor
+        epsilon: exploration probability for ε-greedy
+        epsilon_decay: the rate at which epsilon decays
+        step_size: how fast we update Q
+
+    Returns:
+        Q: action-value function Q[s][a]
+        policy: deterministic policy [nS, nA]
+        V: value function based on greedy (deterministic) policy: V[s] = max_a Q[s][a]
+    """
 
     nS = env.nS
     nA = env.nA
@@ -72,7 +88,23 @@ def q_learning(env,
     epsilon_decay=0.995,
     step_size = 0.01
 ):
+    """
+    Off policy TD Control: Q-Learning
 
+    Args:
+        env: Gymnasium environment with env.nS and env.nA
+        num_episodes: how many episodes/trials to run
+        gamma: discount factor
+        epsilon: exploration probability for ε-greedy
+        epsilon_decay: the rate at which epsilon decays
+        step_size: how fast we update Q
+
+    Returns:
+        Q: action-value function Q[s][a]
+        policy: deterministic policy [nS, nA]
+        V: value function based on greedy (deterministic) policy: V[s] = max_a Q[s][a]
+    """
+    
     nS = env.nS
     nA = env.nA
 
