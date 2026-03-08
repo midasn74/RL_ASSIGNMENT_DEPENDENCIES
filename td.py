@@ -63,3 +63,59 @@ def sarsa(
         V[s] = np.max(Q[s])
 
     return Q, policy, V
+
+def q_learning(env,
+    num_episodes=20000,
+    gamma=0.99,
+    epsilon_start=1.0,
+    epsilon_min=0.01,
+    epsilon_decay=0.995,
+    step_size = 0.01
+):
+
+    nS = env.nS
+    nA = env.nA
+
+    # Initialize Q(s,a) arbritrarily, ensuring that Q(terminal, *) = 0
+    Q = defaultdict(lambda: np.zeros(nA))
+
+    epsilon = epsilon_start
+
+    for ep in range(num_episodes):
+        # Initialize S
+        state, _ = env.reset() 
+        done = False
+        
+        # Loop for each step of episode:
+        while not done:
+            # Choose action from state using policy derived from Q (e-greedy)
+            if np.random.rand() < epsilon:
+                action = np.random.randint(nA)
+            else:
+                action = np.argmax(Q[state])
+
+            # Take action A observe R, S'
+            next_state, reward, terminated, truncated, _ = env.step(action)
+
+            # Update Q
+            best_a = np.argmax(Q[state])
+            Q[state][action] += step_size * (reward + gamma * Q[next_state][best_a] - Q[state][action])
+            state = next_state
+
+            done = terminated or truncated
+    
+        # Update epsilon
+        epsilon = max(epsilon_min, epsilon * epsilon_decay)
+
+    # extract deterministic policy
+    policy = env.get_empty_policy()
+    for s in range(nS):
+        best_a = np.argmax(Q[s])
+        policy[s][best_a] = 1.0
+
+    # extract value of each state
+    V = np.zeros(nS)
+    for s in range(nS):
+        V[s] = np.max(Q[s])
+
+    return Q, policy, V
