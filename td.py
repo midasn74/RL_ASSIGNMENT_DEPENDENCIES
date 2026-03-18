@@ -23,7 +23,7 @@ def sarsa(
 
     Returns:
         Q: action-value function Q[s][a]
-        policy: deterministic policy [nS, nA]
+        policy: final NON-deterministic policy [nS, nA]
         V: value function based on greedy (deterministic) policy: V[s] = max_a Q[s][a]
     """
 
@@ -33,6 +33,8 @@ def sarsa(
     # Initialize Q(s,a) arbritrarily, ensuring that Q(terminal, *) = 0
     Q = defaultdict(lambda: np.zeros(nA))
 
+    policy = np.ones((nS, nA)) / nA
+
     epsilon = epsilon_start
 
     for ep in range(num_episodes):
@@ -40,22 +42,28 @@ def sarsa(
         state, _ = env.reset() 
         done = False
         
-        # Choose action from state using policy derived from Q (e-greedy)
-        if np.random.rand() < epsilon:
-            action = np.random.randint(nA)
-        else:
-            action = np.argmax(Q[state])
+        # Policy derived from Q (e-greedy)
+        action_probabilities = np.array([epsilon / nA + 1 - epsilon])
+        best_action = np.argmax(Q[state])
+        action_probabilities[best_action] = epsilon / nA
+        policy[state] = action_probabilities
+
+        # Choose action from state using policy
+        action = np.random.choice(len(action_probabilities), p=action_probabilities)
 
         # Generate episode
         while not done:
             # Take action A observe #, S'
             next_state, reward, terminated, truncated, _ = env.step(action)
 
-            # Choose A' from S' using policy derived from Q
-            if np.random.rand() < epsilon:
-                next_action = np.random.randint(nA)
-            else:
-                next_action = np.argmax(Q[next_state])
+            # Policy derived from Q (e-greedy)
+            action_probabilities = np.array([epsilon / nA + 1 - epsilon])
+            best_action = np.argmax(Q[state])
+            action_probabilities[best_action] = epsilon / nA
+            policy[state] = action_probabilities
+
+            # Choose action from state using policy
+            next_action = np.random.choice(len(action_probabilities), p=action_probabilities)
 
             # Update Q
             Q[state][action] += step_size * (reward + gamma * Q[next_state][next_action] - Q[state][action])
@@ -67,11 +75,11 @@ def sarsa(
         # Update epsilon
         epsilon = max(epsilon_min, epsilon * epsilon_decay)
 
-    # extract deterministic policy
-    policy = env.get_empty_policy()
-    for s in range(nS):
-        best_a = np.argmax(Q[s])
-        policy[s][best_a] = 1.0
+    # # extract deterministic policy
+    # policy = env.get_empty_policy()
+    # for s in range(nS):
+    #     best_a = np.argmax(Q[s])
+    #     policy[s][best_a] = 1.0
 
     # extract value of each state
     V = np.zeros(nS)
