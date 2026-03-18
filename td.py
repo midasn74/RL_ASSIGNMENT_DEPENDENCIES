@@ -43,7 +43,7 @@ def sarsa(
         done = False
         
         # Policy derived from Q (e-greedy)
-        action_probabilities = np.array([epsilon / nA + 1 - epsilon])
+        action_probabilities = np.array([epsilon / nA + 1 - epsilon]*3)
         best_action = np.argmax(Q[state])
         action_probabilities[best_action] = epsilon / nA
         policy[state] = action_probabilities
