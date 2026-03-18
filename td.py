@@ -44,11 +44,11 @@ def sarsa(
         
         # Policy derived from Q (e-greedy)
         best_action = np.argmax(Q[state])
-        for action in range(nA):
-            if action == best_action:
-                policy[state][action] = epsilon / nA + 1 - epsilon
+        for a in range(nA):
+            if a == best_action:
+                policy[state][a] = epsilon / nA + 1 - epsilon
             else:
-                policy[state][action] = epsilon / nA
+                policy[state][a] = epsilon / nA
 
         # Choose action from state using policy
         action = np.random.choice(len(policy[state]), p=policy[state])
@@ -60,11 +60,11 @@ def sarsa(
 
             # Policy derived from Q (e-greedy)
             best_next_action = np.argmax(Q[next_state])
-            for action in range(nA):
-                if action == best_next_action:
-                    policy[next_state][action] = epsilon / nA + 1 - epsilon
+            for a in range(nA):
+                if a == best_next_action:
+                    policy[next_state][a] = epsilon / nA + 1 - epsilon
                 else:
-                    policy[next_state][action] = epsilon / nA
+                    policy[next_state][a] = epsilon / nA
 
             # Choose action from state using policy
             next_action = np.random.choice(len(policy[next_state]), p=policy[next_state])
