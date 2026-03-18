@@ -43,13 +43,15 @@ def sarsa(
         done = False
         
         # Policy derived from Q (e-greedy)
-        action_probabilities = np.array([epsilon / nA + 1 - epsilon]*3)
         best_action = np.argmax(Q[state])
-        action_probabilities[best_action] = epsilon / nA
-        policy[state] = action_probabilities
+        for action in range(nA):
+            if action == best_action:
+                policy[state][action] = epsilon / nA + 1 - epsilon
+            else:
+                policy[state][action] = epsilon / nA
 
         # Choose action from state using policy
-        action = np.random.choice(len(action_probabilities), p=action_probabilities)
+        action = np.random.choice(len(policy[state]), p=policy[state])
 
         # Generate episode
         while not done:
@@ -57,13 +59,15 @@ def sarsa(
             next_state, reward, terminated, truncated, _ = env.step(action)
 
             # Policy derived from Q (e-greedy)
-            action_probabilities = np.array([epsilon / nA + 1 - epsilon])
-            best_action = np.argmax(Q[state])
-            action_probabilities[best_action] = epsilon / nA
-            policy[state] = action_probabilities
+            best_next_action = np.argmax(Q[next_state])
+            for action in range(nA):
+                if action == best_next_action:
+                    policy[next_state][action] = epsilon / nA + 1 - epsilon
+                else:
+                    policy[next_state][action] = epsilon / nA
 
             # Choose action from state using policy
-            next_action = np.random.choice(len(action_probabilities), p=action_probabilities)
+            next_action = np.random.choice(len(policy[next_state]), p=policy[next_state])
 
             # Update Q
             Q[state][action] += step_size * (reward + gamma * Q[next_state][next_action] - Q[state][action])
