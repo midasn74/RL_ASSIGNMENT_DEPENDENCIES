@@ -79,18 +79,17 @@ def sarsa(
         # Update epsilon
         epsilon = max(epsilon_min, epsilon * epsilon_decay)
 
-    # # extract deterministic policy
-    # policy = env.get_empty_policy()
-    # for s in range(nS):
-    #     best_a = np.argmax(Q[s])
-    #     policy[s][best_a] = 1.0
+    greedy_policy = np.zeros_like(policy)
+    for s in range(nS):
+        best_a = np.argmax(Q[s])
+        greedy_policy[s][best_a] = 1.0
 
     # extract value of each state
     V = np.zeros(nS)
     for s in range(nS):
         V[s] = np.max(Q[s])
 
-    return Q, policy, V
+    return Q, greedy_policy, policy, V
 
 def q_learning(env,
     num_episodes=20000,
