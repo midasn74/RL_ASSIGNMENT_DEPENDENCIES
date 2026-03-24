@@ -144,4 +144,3 @@ def value_iteration(env, gamma=0.99, theta=1e-8, max_iterations=1000):
         policy[state][optimal_action] = 1
 
     return policy, value_function
-
